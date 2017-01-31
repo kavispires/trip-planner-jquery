@@ -63,32 +63,34 @@ $(function initializeMap (){
   populateHTML();
 });
 
+// Populate DOM with 
 function populateHTML() {
-  console.log('its getting called');
   // Loop through hotels and populate #hotel-choices
   hotels.forEach(function(hotel, index, array) {
-    var thehtml = '<option value="' + hotel.id + '">' + hotel.name + '</option>'
+    var thehtml = '<option value="' + hotel.id + '">' + hotel.name + '</option>';
     $('#hotel-choices').append(thehtml);
   });
   // Loop through restaurants and populate #restaurant-choices
   restaurants.forEach(function(restaurant, index, array) {
-    var thehtml = '<option value="' + restaurant.id + '">' + restaurant.name + '</option>'
+    var thehtml = '<option value="' + restaurant.id + '">' + restaurant.name + '</option>';
     $('#restaurant-choices').append(thehtml);
   });
   // Loop through activtes and populate #activity-choices
   activities.forEach(function(activity, index, array) {
-    var thehtml = '<option value="' + activity.id + '">' + activity.name + '</option>'
+    var thehtml = '<option value="' + activity.id + '">' + activity.name + '</option>';
     $('#activity-choices').append(thehtml);
   });
 }
 
-var userChoices = {
+var user = {
+  // Store user's current choice on the select menus
   selectedHotel: 1,
   selectedRestaurant: 1,
   selectedActivity: 1,
 
   currentDay: 1,
-  intineraries: [
+  
+  itineraries: [
     {
       hotel: null,
       restaurants: [],
@@ -97,65 +99,63 @@ var userChoices = {
   ]
 };
 
+/* ===============
+   OPTIONS PANEL 
+   =============== */
+
+// Watches for changes in #hotel-choices and updates the user selection
 $('#hotel-choices').on('change', function() {
-  userChoices.selectedHotel = +$(this).val();
+  user.selectedHotel = +$(this).val();
 });
 
 $('#hotel-add').on('click', function() {
   // Update hotel name inside intineraries
-  userChoices.intineraries[userChoices.currentDay - 1].hotel = hotels[userChoices.selectedHotel - 1];
-
-
+  user.itineraries[user.currentDay - 1].hotel = hotels[user.selectedHotel - 1];
 });
 
 $('#restaurant-choices').on('change', function() {
-  userChoices.selectedRestaurant = +$(this).val();
+  user.selectedRestaurant = +$(this).val();
 });
 
 $('#restaurant-add').on('click', function() {
-  // Update hotel name inside intineraries
-  userChoices.intineraries[userChoices.currentDay - 1].restaurants.push(restaurants[userChoices.selectedRestaurant - 1]); 
+  // Update hotel name inside itineraries
+  user.itineraries[user.currentDay - 1].restaurants.push(restaurants[user.selectedRestaurant - 1]); 
 });
 
 $('#activity-choices').on('change', function() {
-  userChoices.selectedActivity = +$(this).val();
+  user.selectedActivity = +$(this).val();
 });
 
 $('#activity-add').on('click', function() {
-  // Update hotel name inside intineraries
-  userChoices.intineraries[userChoices.currentDay - 1].activities.push(activities[userChoices.selectedActivity - 1]); 
-
-
+  // Update hotel name inside itineraries
+  user.itineraries[user.currentDay - 1].activities.push(activities[user.selectedActivity - 1]); 
 });
 
+/* ===============
+   ITINERARY 
+   =============== */
 
-var totalItins = 1;
-
-
-
-/* INTINERARY */
-
-$('.day-buttons').on('click', '.x', function(){
-  $('.x').removeClass('current-day');
+// Clicking on a day button, toggles current-day class and updates currentDay 
+$('.day-buttons').on('click', '.day', function(){
+  $('.day').removeClass('current-day');
   $(this).addClass('current-day');
-  userChoices.currentDay = +$(this).text();
-  console.log(userChoices.currentDay);
-
-  $('#day-title span').text('Day ' + userChoices.currentDay);
+  user.currentDay = +$(this).text();
+  $('#day-title span').text('Day ' + user.currentDay);
 });
 
+// Adding a new day, pushes a template object to user.itineraries and creates a new button
 $('#day-add').on('click', function() {
-  totalItins++
- var obj = {
+  
+  var dayTemplate = {
       hotel: '',
       restaurants: [],
       activities: []
-    }
-    userChoices.intineraries.push(obj)
+  };
 
+  user.itineraries.push(dayTemplate);
 
-  $("<button class='btn btn-circle day-btn x'>"+totalItins+"</button>").insertBefore($(this))
-})
+  $("<button class='btn btn-circle day-btn day'>" + user.intineraries.length + "</button>").insertBefore($(this));
+});
 
 
 
