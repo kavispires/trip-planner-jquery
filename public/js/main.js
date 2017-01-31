@@ -60,4 +60,82 @@ $(function initializeMap (){
   drawMarker('restaurant', [40.705137, -74.013940]);
   drawMarker('activity', [40.716291, -73.995315]);
 
+  populateHTML();
 });
+
+function populateHTML() {
+  console.log('its getting called');
+  // Loop through hotels and populate #hotel-choices
+  hotels.forEach(function(hotel, index, array) {
+    var thehtml = '<option value="' + hotel.id + '">' + hotel.name + '</option>'
+    $('#hotel-choices').append(thehtml);
+  });
+  // Loop through restaurants and populate #restaurant-choices
+  restaurants.forEach(function(restaurant, index, array) {
+    var thehtml = '<option value="' + restaurant.id + '">' + restaurant.name + '</option>'
+    $('#restaurant-choices').append(thehtml);
+  });
+  // Loop through activtes and populate #activity-choices
+  activities.forEach(function(activity, index, array) {
+    var thehtml = '<option value="' + activity.id + '">' + activity.name + '</option>'
+    $('#activity-choices').append(thehtml);
+  });
+}
+
+var userChoices = {
+  selectedHotel: 1,
+  selectedRestaurant: 1,
+  selectedActivity: 1,
+
+  currentDay: 1,
+  intineraries: [
+    {
+      hotel: null,
+      restaurants: [],
+      activities: []
+    }
+  ]
+};
+
+$('#hotel-choices').on('change', function() {
+  userChoices.selectedHotel = +$(this).val();
+});
+
+$('#hotel-add').on('click', function() {
+  // Update hotel name inside intineraries
+  userChoices.intineraries[userChoices.currentDay - 1].hotel = hotels[userChoices.selectedHotel - 1].name;
+});
+
+$('#restaurant-choices').on('change', function() {
+  userChoices.selectedRestaurant = +$(this).val();
+});
+
+$('#restaurant-add').on('click', function() {
+  // Update hotel name inside intineraries
+  userChoices.intineraries[userChoices.currentDay - 1].restaurants.push(restaurants[userChoices.selectedRestaurant - 1].name); 
+});
+
+$('#activity-choices').on('change', function() {
+  userChoices.selectedActivity = +$(this).val();
+});
+
+$('#activity-add').on('click', function() {
+  // Update hotel name inside intineraries
+  userChoices.intineraries[userChoices.currentDay - 1].activities.push(activities[userChoices.selectedActivity - 1].name); 
+});
+
+/* INTINERARY */
+
+$('.day-btn').on('click', function(){
+  // Toggle current-day class
+  $('.day-btn').removeClass('current-day');
+  $(this).addClass('current-day');
+  // Switch currentDay
+  userChoices.currentDay = +$(this).text();
+  console.log(userChoices.currentDay);
+  // Change Label number
+  $('#day-title span').text('Day ' + userChoices.currentDay);
+});
+
+
+
