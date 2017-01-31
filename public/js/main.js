@@ -92,7 +92,7 @@ var user = {
   
   itineraries: [
     {
-      hotel: null,
+      hotel: '',
       restaurants: [],
       activities: []
     }
@@ -111,6 +111,8 @@ $('#hotel-choices').on('change', function() {
 $('#hotel-add').on('click', function() {
   // Update hotel name inside intineraries
   user.itineraries[user.currentDay - 1].hotel = hotels[user.selectedHotel - 1];
+  // Update itinerary in the DOM
+  refreshItinerary();
 });
 
 $('#restaurant-choices').on('change', function() {
@@ -120,6 +122,8 @@ $('#restaurant-choices').on('change', function() {
 $('#restaurant-add').on('click', function() {
   // Update hotel name inside itineraries
   user.itineraries[user.currentDay - 1].restaurants.push(restaurants[user.selectedRestaurant - 1]); 
+  // Update itinerary in the DOM
+  refreshItinerary();
 });
 
 $('#activity-choices').on('change', function() {
@@ -129,6 +133,8 @@ $('#activity-choices').on('change', function() {
 $('#activity-add').on('click', function() {
   // Update hotel name inside itineraries
   user.itineraries[user.currentDay - 1].activities.push(activities[user.selectedActivity - 1]); 
+  // Update itinerary in the DOM
+  refreshItinerary();
 });
 
 /* ===============
@@ -157,9 +163,37 @@ $('#day-add').on('click', function() {
   $("<button class='btn btn-circle day-btn day'>" + user.intineraries.length + "</button>").insertBefore($(this));
 });
 
+// Get currentDay and populate #itinerary according to that day's data
+function refreshItinerary() {
 
+  var currentDay = user.itineraries[user.currentDay - 1];
+  
+  // Add hotel
+  var hotelItem = itemTemplate(currentDay.hotel.name);
+  $('#my-hotels').html(hotelItem);
 
+  // Add restaurants
+  $('#my-restaurants').html(''); // clears DOM element
+  currentDay.restaurants.forEach(function(restaurant, index) {
+    var restaurantItem = itemTemplate(currentDay.restaurants[index].name);
+    $('#my-restaurants').append(restaurantItem);
+  });
 
+  // Add activities
+  $('#my-activities').html(''); // clears DOM element
+  currentDay.activities.forEach(function(activity, index) {
+    var activityItem = itemTemplate(currentDay.activities[index].name);
+    $('#my-activities').append(activityItem);
+  });
+}
+
+// Returns an HTML template for ech itinerary item
+function itemTemplate(name) {
+  return  '<div class="itinerary-item">' +
+          '<span class="title">' + name +'</span>' +
+          '<button class="btn btn-xs btn-danger remove btn-circle">x</button>' +
+          '</div>';
+}
 
 
 
