@@ -103,7 +103,7 @@ $('#hotel-choices').on('change', function() {
 
 $('#hotel-add').on('click', function() {
   // Update hotel name inside intineraries
-  userChoices.intineraries[userChoices.currentDay - 1].hotel = hotels[userChoices.selectedHotel - 1].name;
+  userChoices.intineraries[userChoices.currentDay - 1].hotel = hotels[userChoices.selectedHotel - 1];
 });
 
 $('#restaurant-choices').on('change', function() {
@@ -112,7 +112,7 @@ $('#restaurant-choices').on('change', function() {
 
 $('#restaurant-add').on('click', function() {
   // Update hotel name inside intineraries
-  userChoices.intineraries[userChoices.currentDay - 1].restaurants.push(restaurants[userChoices.selectedRestaurant - 1].name); 
+  userChoices.intineraries[userChoices.currentDay - 1].restaurants.push(restaurants[userChoices.selectedRestaurant - 1]); 
 });
 
 $('#activity-choices').on('change', function() {
@@ -121,7 +121,7 @@ $('#activity-choices').on('change', function() {
 
 $('#activity-add').on('click', function() {
   // Update hotel name inside intineraries
-  userChoices.intineraries[userChoices.currentDay - 1].activities.push(activities[userChoices.selectedActivity - 1].name); 
+  userChoices.intineraries[userChoices.currentDay - 1].activities.push(activities[userChoices.selectedActivity - 1]); 
 });
 
 /* INTINERARY */
