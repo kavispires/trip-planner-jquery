@@ -104,6 +104,8 @@ $('#hotel-choices').on('change', function() {
 $('#hotel-add').on('click', function() {
   // Update hotel name inside intineraries
   userChoices.intineraries[userChoices.currentDay - 1].hotel = hotels[userChoices.selectedHotel - 1];
+
+
 });
 
 $('#restaurant-choices').on('change', function() {
@@ -122,20 +124,54 @@ $('#activity-choices').on('change', function() {
 $('#activity-add').on('click', function() {
   // Update hotel name inside intineraries
   userChoices.intineraries[userChoices.currentDay - 1].activities.push(activities[userChoices.selectedActivity - 1]); 
+
+
 });
+
+
+var totalItins = 1;
+
+
 
 /* INTINERARY */
 
-$('.day-btn').on('click', function(){
-  // Toggle current-day class
-  $('.day-btn').removeClass('current-day');
+$('.day-buttons').on('click', '.x', function(){
+  $('.x').removeClass('current-day');
   $(this).addClass('current-day');
-  // Switch currentDay
   userChoices.currentDay = +$(this).text();
   console.log(userChoices.currentDay);
-  // Change Label number
+
   $('#day-title span').text('Day ' + userChoices.currentDay);
 });
+
+$('#day-add').on('click', function() {
+  totalItins++
+ var obj = {
+      hotel: '',
+      restaurants: [],
+      activities: []
+    }
+    userChoices.intineraries.push(obj)
+
+
+  $("<button class='btn btn-circle day-btn x'>"+totalItins+"</button>").insertBefore($(this))
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
