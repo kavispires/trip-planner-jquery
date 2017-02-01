@@ -59,16 +59,16 @@ $(function initializeMap (){
     });
     marker.setMap(currentMap);
     markers.push(marker)
-    fitbound()
+    fitBound()
   }
 
   function fitBound (){
-    bounds = new google.maps.LatLngBounds();
-    markers.forEach(function(marker){
+      bounds = new google.maps.LatLngBounds();
+      markers.forEach(function(marker){
       bounds.extend(marker.position);
     })
     
-    map.fitBounds(bounds);
+    currentMap.fitBounds(bounds);
   }
 
   // drawMarker('hotel', [40.705137, -74.007624]);
