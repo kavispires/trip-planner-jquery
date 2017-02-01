@@ -60,11 +60,11 @@ $(function initializeMap (){
   drawMarker('restaurant', [40.705137, -74.013940]);
   drawMarker('activity', [40.716291, -73.995315]);
 
-  populateHTML();
+  init();
 });
 
-// Populate DOM with 
-function populateHTML() {
+// Populate DOM 
+function init() {
   // Loop through hotels and populate #hotel-choices
   hotels.forEach(function(hotel, index, array) {
     var thehtml = '<option value="' + hotel.id + '">' + hotel.name + '</option>';
@@ -80,6 +80,8 @@ function populateHTML() {
     var thehtml = '<option value="' + activity.id + '">' + activity.name + '</option>';
     $('#activity-choices').append(thehtml);
   });
+  // Add the first day to itinerary
+  user.itineraries.push(user.dayTemplate);
 }
 
 var user = {
@@ -90,13 +92,13 @@ var user = {
 
   currentDay: 1,
   
-  itineraries: [
-    {
+  itineraries: [],
+
+  dayTemplate: {
       hotel: '',
       restaurants: [],
       activities: []
-    }
-  ]
+  }
 };
 
 /* ===============
@@ -109,7 +111,7 @@ $('#hotel-choices').on('change', function() {
 });
 
 $('#hotel-add').on('click', function() {
-  // Update hotel name inside intineraries
+  // Update hotel name inside itineraries
   user.itineraries[user.currentDay - 1].hotel = hotels[user.selectedHotel - 1];
   // Update itinerary in the DOM
   refreshItinerary();
@@ -147,27 +149,44 @@ $('.day-buttons').on('click', '.day', function(){
   $(this).addClass('current-day');
   user.currentDay = +$(this).text();
   $('#day-title span').text('Day ' + user.currentDay);
+  refreshItinerary();
 });
 
 // Adding a new day, pushes a template object to user.itineraries and creates a new button
 $('#day-add').on('click', function() {
-  
-  var dayTemplate = {
-      hotel: '',
-      restaurants: [],
-      activities: []
-  };
+  user.itineraries.push(user.dayTemplate);
+  $("<button class='btn btn-circle day-btn day'>" + user.itineraries.length + "</button>").insertBefore($(this));
+});
 
-  user.itineraries.push(dayTemplate);
+// Clicking on the main day X button, removes that day completely from the database
+// It also changes the currentDay to a previous one and refresh the day numbers
+$('#delete-day').on('click', function(){
+  $('.day-buttons button:nth-child(' + user.currentDay + ')').remove();
+  user.itineraries.splice(user.currentDay - 1, 1);
 
-  $("<button class='btn btn-circle day-btn day'>" + user.intineraries.length + "</button>").insertBefore($(this));
+  // If that was the only day available, create a blank one
+  if (user.itineraries.length < 1) {
+     user.itineraries.push(user.dayTemplate); 
+  }
+  // Updates currentDay
+  user.currentDay = 1;
+  // Select the first day button and turn it active, then update the number in DOM.
+  $('.day-buttons button:first-Child').addClass('current-day');
+  $('#day-title span').text('Day ' + user.currentDay);
+  // Re-enumerate the days left
+  var renumbering = 1;
+  $('.day-buttons').children().each(function() {
+    if ($(this).hasClass('day')) {
+      $(this).text(renumbering++);
+    }
+  });
 });
 
 // Get currentDay and populate #itinerary according to that day's data
 function refreshItinerary() {
 
   var currentDay = user.itineraries[user.currentDay - 1];
-  
+
   // Add hotel
   var hotelItem = itemTemplate(currentDay.hotel.name);
   $('#my-hotels').html(hotelItem);
@@ -189,13 +208,17 @@ function refreshItinerary() {
 
 // Returns an HTML template for ech itinerary item
 function itemTemplate(name) {
-  return  '<div class="itinerary-item">' +
-          '<span class="title">' + name +'</span>' +
-          '<button class="btn btn-xs btn-danger remove btn-circle">x</button>' +
-          '</div>';
+  if (name) {
+    return  '<div class="itinerary-item">' +
+            '<span class="title">' + name +'</span>' +
+            '<button class="btn btn-xs btn-danger remove btn-circle">x</button>' +
+            '</div>';  
+  } else {
+    return '';
+  }
 }
 
-
+// NOT WORKING: The refreshItinerary, on line 188 is not picking the right array element for some reason to updating the DOM.
 
 
 
