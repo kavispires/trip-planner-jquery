@@ -46,6 +46,10 @@ $(function initializeMap (){
     activity: '/images/star-3.png'
   };
 
+  var markers = []
+  var bounds;
+
+
   function drawMarker (type, coords) {
     var latLng = new google.maps.LatLng(coords[0], coords[1]);
     var iconURL = iconURLs[type];
@@ -54,51 +58,88 @@ $(function initializeMap (){
       position: latLng
     });
     marker.setMap(currentMap);
+    markers.push(marker)
+    fitbound()
   }
 
-  drawMarker('hotel', [40.705137, -74.007624]);
-  drawMarker('restaurant', [40.705137, -74.013940]);
-  drawMarker('activity', [40.716291, -73.995315]);
+  function fitBound (){
+    bounds = new google.maps.LatLngBounds();
+    markers.forEach(function(marker){
+      bounds.extend(marker.position);
+    })
+    
+    map.fitBounds(bounds);
+  }
+
+  // drawMarker('hotel', [40.705137, -74.007624]);
+  // drawMarker('restaurant', [40.705137, -74.013940]);
+  // drawMarker('activity', [40.716291, -73.995315]);
 
   var currentDay = 1;
   var dayPlans = [{}];
+  
 // $('.remove').prop("disabled",true);
 
 //populate select options
 hotels.forEach(function(hotel){
-  $('#hotel-choices').append( `<option value=${hotel.name}> ${hotel.name}</option>`)   
+  var value= hotel.name.split(' ').join('_')
+  $('#hotel-choices').append( `<option value=${value}> ${hotel.name}</option>`)   
 })
 restaurants.forEach(function(restaurant){
-  $('#restaurant-choices').append( `<option value=${restaurant.name}> ${restaurant.name}</option>`)   
+  var value= restaurant.name.split(' ').join('_')
+  $('#restaurant-choices').append( `<option value=${value}> ${restaurant.name}  </option>`)   
 })
 activities.forEach(function(activity){
-  $('#activity-choices').append( `<option value=${activity.name}>${activity.name}</option>`)   
+  var value= activity.name.split(' ').join('_')
+  $('#activity-choices').append( `<option value=${value}>      ${activity.name}   </option>`)   
 })
 
 //small blue plus buttons functionality
 $('#hotel-add').click(function(){
+  
   if(dayPlans[currentDay-1]===undefined){
     dayPlans.push({})
   } 
-  dayPlans[currentDay-1].hotel_name = $('#hotel-choices').val()
-  $('#hot-name').text(dayPlans[currentDay-1].hotel_name)
+  dayPlans[currentDay-1].hotel_name = $('#hotel-choices').val().split('_').join(' ')
+  
+  var hotelName = dayPlans[currentDay-1].hotel_name
+
+  $('#hot-name').text(hotelName)  
+  drawMarker('hotel', findbyName(hotelName,hotels));
+ 
 })
 
+function findbyName(placeName,placeType){
+ for (var i=0;i<placeType.length; i++){
+    if(placeType[i].name==placeName){
+      return placeType[i].place.location
+    }
+}
+
+return false
+}
+
 $('#restaurant-add').click(function(){
+
   if(dayPlans[currentDay-1]===undefined){
     dayPlans.push({})
   }
   if(dayPlans[currentDay-1].restaurant_name ===undefined) { 
-    dayPlans[currentDay-1].restaurant_name = [$('#restaurant-choices').val()]
+
+    dayPlans[currentDay-1].restaurant_name = [$('#restaurant-choices').val().split('_').join(' ')]
   }else {
-    if(!dayPlans[currentDay-1].restaurant_name.includes($('#restaurant-choices').val())) {
-      dayPlans[currentDay-1].restaurant_name.push($('#restaurant-choices').val() )
+    if(!dayPlans[currentDay-1].restaurant_name.includes($('#restaurant-choices').val().split('_').join(' '))) {
+      dayPlans[currentDay-1].restaurant_name.push($('#restaurant-choices').val().split('_').join(' ') )
     }
   }
   $('#my-restaurants').empty();
   dayPlans[currentDay-1].restaurant_name.forEach(function(rest) {
     $('#my-restaurants').append(`<li style='list-style-type:none'>${rest}</li>`)
   })
+
+   var restaurantName = dayPlans[currentDay-1].restaurant_name
+   var resName = restaurantName[restaurantName.length-1]
+   drawMarker('restaurant', findbyName(resName,restaurants));
 
 })
 
@@ -107,16 +148,21 @@ $('#activity-add').click(function(){
     dayPlans.push({})
   } 
   if(dayPlans[currentDay-1].activity_name ===undefined) { 
-    dayPlans[currentDay-1].activity_name = [$('#activity-choices').val()]
+    dayPlans[currentDay-1].activity_name = [$('#activity-choices').val().split('_').join(' ')]
   }else {
-    if(!dayPlans[currentDay-1].activity_name.includes($('#activity-choices').val())) {
-      dayPlans[currentDay-1].activity_name.push($('#activity-choices').val() )
+    if(!dayPlans[currentDay-1].activity_name.includes($('#activity-choices').val().split('_').join(' '))) {
+      dayPlans[currentDay-1].activity_name.push($('#activity-choices').val().split('_').join(' ') )
     }
   }
   $('#my-activities').empty();
   dayPlans[currentDay-1].activity_name.forEach(function(act) {
     $('#my-activities').append(`<li style='list-style-type:none'>${act}</li>`)
   })
+
+  var activityName = dayPlans[currentDay-1].activity_name
+   var actName = activityName[activityName.length-1]
+   drawMarker('activity', findbyName(actName,activities));
+
 })
 
 // add day button
